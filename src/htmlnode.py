@@ -1,12 +1,11 @@
-
 from typing import Self
 
 class HTMLNode:
     def __init__(self, 
-                 tag: str | None,
-                 value: str | None,
-                 children: list[Self] | None,
-                 props: dict[str, str] | None
+                 tag: str | None = None,
+                 value: str | None = None,
+                 children: list[Self] | None = None,
+                 props: dict[str, str] | None = None
                  ) -> None:
         self.tag = tag
         self.value = value
