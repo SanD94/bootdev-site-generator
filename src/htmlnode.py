@@ -1,11 +1,13 @@
-from typing import Self
+from typing import TypeVar, Optional, List
+
+NodeT = TypeVar("NodeT", bound="HTMLNode")
 
 class HTMLNode:
     def __init__(self, 
-                 tag: str | None = None,
-                 value: str | None = None,
-                 children: list[Self] | None = None,
-                 props: dict[str, str] | None = None
+                 tag: Optional[str] = None,
+                 value: Optional[str] = None,
+                 children: Optional[List[NodeT]] = None,
+                 props: Optional[dict[str, str]] = None
                  ) -> None:
         self.tag = tag
         self.value = value
@@ -30,9 +32,9 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self,
-                 tag: str | None,
-                 value: str | None,
-                 props: dict[str, str] | None = None
+                 tag: Optional[str],
+                 value: Optional[str],
+                 props: Optional[dict[str, str]] = None
                  ) -> None:
         super().__init__(tag, value, None, props)
 
@@ -48,4 +50,23 @@ class LeafNode(HTMLNode):
     def __repr__(self) -> str:
         return f"LeafNode({self.tag}, {self.value}, {self.props_to_html()})"
 
+class ParentNode(HTMLNode):
+    def __init__(self,
+                 tag: Optional[str],
+                 children: Optional[List[HTMLNode]],
+                 props: Optional[dict[str, str]] = None
+                 ) -> None:
+        super().__init__(tag, None, children, props)
 
+    def to_html(self) -> str:
+        if self.tag is None:
+            raise ValueError
+
+        if self.children is None:
+            raise ValueError("children is missing in parent node")
+
+        children_html = []
+        for child in self.children:
+            children_html.append(child.to_html())
+
+        return f"<{self.tag}{self.props_to_html()}>{"".join(children_html)}</{self.tag}>"
