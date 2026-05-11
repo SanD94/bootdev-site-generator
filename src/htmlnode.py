@@ -1,20 +1,20 @@
-from typing import TypeVar, Optional, List
+from __future__ import annotations
+from typing import List
 
-NodeT = TypeVar("NodeT", bound="HTMLNode")
 
 class HTMLNode:
     def __init__(self, 
-                 tag: Optional[str] = None,
-                 value: Optional[str] = None,
-                 children: Optional[List[NodeT]] = None,
-                 props: Optional[dict[str, str]] = None
+                 tag: str | None = None,
+                 value: str | None = None,
+                 children: List[HTMLNode] | None = None,
+                 props: dict[str, str] | None = None
                  ) -> None:
         self.tag = tag
         self.value = value
         self.children = children
         self.props = props
 
-    def to_html(self):
+    def to_html(self) -> str:
         raise NotImplementedError
 
     def props_to_html(self) -> str:
@@ -32,9 +32,9 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self,
-                 tag: Optional[str],
-                 value: Optional[str],
-                 props: Optional[dict[str, str]] = None
+                 tag: str | None,
+                 value: str | None,
+                 props: dict[str, str] | None = None
                  ) -> None:
         super().__init__(tag, value, None, props)
 
@@ -52,9 +52,9 @@ class LeafNode(HTMLNode):
 
 class ParentNode(HTMLNode):
     def __init__(self,
-                 tag: Optional[str],
-                 children: Optional[List[HTMLNode]],
-                 props: Optional[dict[str, str]] = None
+                 tag: str | None,
+                 children: List[HTMLNode] | None,
+                 props: dict[str, str] | None = None
                  ) -> None:
         super().__init__(tag, None, children, props)
 
