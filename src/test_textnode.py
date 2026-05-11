@@ -4,23 +4,23 @@ from textnode import TextNode, TextType
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
-        node  = TextNode("This is a text node", TextType.TEXT_BOLD)
-        node2 = TextNode("This is a text node", TextType.TEXT_BOLD)
+        node  = TextNode("This is a text node", TextType.BOLD)
+        node2 = TextNode("This is a text node", TextType.BOLD)
         self.assertEqual(node, node2)
 
     def test_text_not_eq(self):
-        node  = TextNode("This is a bold text node", TextType.TEXT_BOLD)
-        node2 = TextNode("This is a text node", TextType.TEXT_BOLD)
+        node  = TextNode("This is a bold text node", TextType.BOLD)
+        node2 = TextNode("This is a text node", TextType.BOLD)
         self.assertNotEqual(node, node2)
 
     def test_text_type_not_eq(self):
-        node  = TextNode("This is a text node", TextType.TEXT_BOLD)
-        node2 = TextNode("This is a text node", TextType.TEXT_PLAIN)
+        node  = TextNode("This is a text node", TextType.BOLD)
+        node2 = TextNode("This is a text node", TextType.PLAIN)
         self.assertNotEqual(node, node2)
 
     def test_url_not_eq(self):
-        node  = TextNode("This is a text node", TextType.TEXT_BOLD)
-        node2 = TextNode("This is a text node", TextType.TEXT_BOLD, "boot.dev")
+        node  = TextNode("This is a text node", TextType.BOLD)
+        node2 = TextNode("This is a text node", TextType.BOLD, "boot.dev")
         self.assertNotEqual(node, node2)
 
 
