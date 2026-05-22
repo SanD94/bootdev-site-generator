@@ -1,6 +1,6 @@
 import unittest
 
-from markdown_utils import BlockType, block_to_block_type, markdown_to_blocks
+from markdown_utils import BlockType, MarkdownBlock, markdown_to_blocks, parse_markdown_block
 
 
 class TestMarkdownToBlocks(unittest.TestCase):
@@ -26,85 +26,66 @@ This is the same paragraph on a new line
             ],
         )
 
-class TestBlockToBlockType(unittest.TestCase):
-    def test_correct_heading(self):
-        block = "###### hello"
+class TestParseMarkdownBlock(unittest.TestCase):
+    def test_parse_heading(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.HEADING
+            parse_markdown_block("### hello"),
+            MarkdownBlock(BlockType.HEADING, "hello", level=3)
         )
 
-    def test_wrong_heading(self):
-        block = "####### hello"
+    def test_parse_wrong_heading_as_paragraph(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.PARAGRAPH
+            parse_markdown_block("####### hello"),
+            MarkdownBlock(BlockType.PARAGRAPH, "####### hello")
         )
 
-    def test_correct_code(self):
-        block = """```\nconsole.log("Hello World!");\n```"""
+    def test_parse_code(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.CODE
+            parse_markdown_block("```\nprint('hello')\n```"),
+            MarkdownBlock(BlockType.CODE, "print('hello')")
         )
 
-    def test_wrong_code(self):
-        block = """```\nconsole.log("Hello World!");\n``"""
-
+    def test_parse_wrong_code_as_paragraph(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.PARAGRAPH
+            parse_markdown_block("```\nprint('hello')\n``"),
+            MarkdownBlock(BlockType.PARAGRAPH, "``` print('hello') ``")
         )
 
-    def test_correct_quote(self):
-        block = """> Nope\n> Hey"""
-
+    def test_parse_quote(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.QUOTE
+            parse_markdown_block("> hello\n> world"),
+            MarkdownBlock(BlockType.QUOTE, "hello\nworld")
         )
 
-    def test_wrong_quote(self):
-        block = """> Nope\n< Hey"""
-
+    def test_parse_wrong_quote_as_paragraph(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.PARAGRAPH
+            parse_markdown_block("> hello\n< world"),
+            MarkdownBlock(BlockType.PARAGRAPH, "> hello < world")
         )
 
-    def test_correct_ulist(self):
-        block = """- nope\n- hey"""
-
+    def test_parse_unordered_list(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.ULIST
+            parse_markdown_block("- hello\n- world"),
+            MarkdownBlock(BlockType.ULIST, "", items=["hello", "world"])
         )
 
-    def test_wrong_ulist(self):
-        block = """- nope\n-- hey"""
-
+    def test_parse_wrong_unordered_list_as_paragraph(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.PARAGRAPH
+            parse_markdown_block("- hello\n-- world"),
+            MarkdownBlock(BlockType.PARAGRAPH, "- hello -- world")
         )
 
-
-    def test_correct_olist(self):
-        block = """1. nope\n2. hey"""
-
+    def test_parse_ordered_list(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.OLIST
+            parse_markdown_block("1. hello\n2. world"),
+            MarkdownBlock(BlockType.OLIST, "", items=["hello", "world"])
         )
 
-    def test_wrong_olist(self):
-        block = """1. nope\n3. hey"""
-
+    def test_parse_wrong_ordered_list_as_paragraph(self):
         self.assertEqual(
-            block_to_block_type(block),
-            BlockType.PARAGRAPH
+            parse_markdown_block("1. hello\n3. world"),
+            MarkdownBlock(BlockType.PARAGRAPH, "1. hello 3. world")
         )
 
 if __name__ == "__main__":
     unittest.main()
-

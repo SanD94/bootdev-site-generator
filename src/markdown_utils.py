@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 from enum import Enum
 import re
-
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -9,6 +9,14 @@ class BlockType(Enum):
     QUOTE     = "quote"
     ULIST     = "unordered_list"
     OLIST     = "ordered_list"
+
+
+@dataclass
+class MarkdownBlock:
+    block_type: BlockType
+    content: str
+    level: int | None = None
+    items: list[str] | None = None
 
 
 def markdown_to_blocks(markdown: str) -> list[str]:
@@ -20,19 +28,40 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     return blocks
 
 
-def block_to_block_type(md_block: str) -> BlockType:
+def parse_markdown_block(md_block: str) -> MarkdownBlock:
     lines = md_block.split("\n")
+    heading_match = re.match(r"^(#{1,6}) (.+)", md_block)
 
-    if re.match(r"^#{1,6} .+", md_block):
-        return BlockType.HEADING
+    if heading_match:
+        return MarkdownBlock(
+            BlockType.HEADING,
+            heading_match.group(2),
+            level=len(heading_match.group(1))
+        )
     if md_block.startswith("```\n") and md_block.endswith("```"):
-        return BlockType.CODE
+        return MarkdownBlock(
+            BlockType.CODE,
+            md_block[4:-4]
+        )
     if all(line.startswith(">") for line in lines):
-        return BlockType.QUOTE
+        return MarkdownBlock(
+            BlockType.QUOTE,
+            "\n".join(line[1:].strip() for line in lines)
+        )
     if all(line.startswith("- ") for line in lines):
-        return BlockType.ULIST
+        return MarkdownBlock(
+            BlockType.ULIST,
+            "",
+            items=[line[2:] for line in lines]
+        )
     if all(line.startswith(f"{i}. ") for i, line in enumerate(lines, start=1)):
-        return BlockType.OLIST
+        return MarkdownBlock(
+            BlockType.OLIST,
+            "",
+            items=[line.split(". ", 1)[1] for line in lines]
+        )
 
-
-    return BlockType.PARAGRAPH
+    return MarkdownBlock(
+        BlockType.PARAGRAPH,
+        " ".join(lines)
+    )

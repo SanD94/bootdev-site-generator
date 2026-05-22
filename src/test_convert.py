@@ -1,6 +1,6 @@
 import unittest
 
-from convert import text_node_to_html_node
+from convert import markdown_to_html_node, text_node_to_html_node
 from textnode import TextNode, TextType
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
@@ -52,6 +52,24 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         )
 
 
+class TestMarkdownToHTMLNode(unittest.TestCase):
+    def test_markdown_blocks_to_html(self):
+        markdown = """## My _heading_
+
+- one
+- **two**
+
+```
+print("hi")
+```"""
+
+        html_node = markdown_to_html_node(markdown)
+
+        self.assertEqual(
+            html_node.to_html(),
+            '<div><h2>My <i>heading</i></h2><ul><li>one</li><li><b>two</b></li></ul><pre><code>print("hi")</code></pre></div>'
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
-
