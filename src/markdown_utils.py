@@ -65,3 +65,12 @@ def parse_markdown_block(md_block: str) -> MarkdownBlock:
         BlockType.PARAGRAPH,
         " ".join(lines)
     )
+
+def extract_title(markdown: str) -> str:
+    blocks = markdown_to_blocks(markdown)
+    header = parse_markdown_block(blocks[0])
+    if header.block_type is not BlockType.HEADING:
+        raise ValueError("header not found")
+    if header.level != 1:
+        raise ValueError("main header not found")
+    return header.content

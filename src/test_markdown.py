@@ -1,6 +1,6 @@
 import unittest
 
-from markdown_utils import BlockType, MarkdownBlock, markdown_to_blocks, parse_markdown_block
+from markdown_utils import BlockType, MarkdownBlock, extract_title, markdown_to_blocks, parse_markdown_block
 
 
 class TestMarkdownToBlocks(unittest.TestCase):
@@ -85,6 +85,15 @@ class TestParseMarkdownBlock(unittest.TestCase):
         self.assertEqual(
             parse_markdown_block("1. hello\n3. world"),
             MarkdownBlock(BlockType.PARAGRAPH, "1. hello 3. world")
+        )
+
+
+class TestExtractTitle(unittest.TestCase):
+    def test_correct_title(self):
+        markdown = "# Hello"
+        self.assertEqual(
+            extract_title(markdown),
+            "Hello"
         )
 
 if __name__ == "__main__":

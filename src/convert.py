@@ -1,4 +1,6 @@
-from markdown_utils import BlockType, MarkdownBlock, markdown_to_blocks, parse_markdown_block
+import os
+import re
+from markdown_utils import BlockType, MarkdownBlock, extract_title, markdown_to_blocks, parse_markdown_block
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from utils import text_to_textnodes
@@ -87,3 +89,26 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
             markdown_to_blocks(markdown)
         ))
     )
+
+def _replace_content(html: str, title: str, md_html_str: str) -> str:
+    html = re.sub(r"\{\{ Title \}\}", title, html)
+    html = re.sub(r"\{\{ Content \}\}", str(md_html_str), html)
+    return html
+
+def generate_page(from_path: str, template_path: str, dest_path: str):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path, "r") as f:
+        markdown = f.read()
+    with open(template_path, "r") as f:
+        template = f.read()
+
+    md_html_str = markdown_to_html_node(markdown).to_html()
+    title = extract_title(markdown)
+    content = _replace_content(template, title, md_html_str)
+    dir_path = os.path.dirname(dest_path)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    with open(dest_path, "w") as f:
+        f.write(content)
+        
+        
