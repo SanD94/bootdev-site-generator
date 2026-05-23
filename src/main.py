@@ -1,8 +1,8 @@
-import shutil, os
+import shutil, os, sys
 
 from convert import generate_blog
 
-def copy_files(src: str = "static", dst: str = "public"):
+def copy_files(src: str = "static", dst: str = "docs"):
     if os.path.exists(dst):
         shutil.rmtree(dst)
     os.mkdir(dst)
@@ -18,8 +18,11 @@ def copy_files(src: str = "static", dst: str = "public"):
 
 
 def main():
+    basepath = "/"
+    if len(sys.argv) >= 2:
+        basepath = sys.argv[1]
     copy_files()
-    generate_blog()
+    generate_blog(basepath = basepath)
 
 if __name__ == "__main__":
     main()

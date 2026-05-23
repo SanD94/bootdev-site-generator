@@ -90,12 +90,15 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
         ))
     )
 
-def _replace_content(html: str, title: str, md_html_str: str) -> str:
+def _replace_content(html: str, title: str, md_html_str: str, basepath: str) -> str:
     html = re.sub(r"\{\{ Title \}\}", title, html)
-    html = re.sub(r"\{\{ Content \}\}", str(md_html_str), html)
+    html = re.sub(r"\{\{ Content \}\}", md_html_str, html)
+    html = re.sub(r"href=\"\/", f"href=\"/{basepath}/", html)
+    html = re.sub(r"src=\"\/", f"src=\"/{basepath}/", html)
+    
     return html
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path, "r") as f:
         markdown = f.read()
@@ -104,24 +107,28 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
     md_html_str = markdown_to_html_node(markdown).to_html()
     title = extract_title(markdown)
-    content = _replace_content(template, title, md_html_str)
+    content = _replace_content(template, title, md_html_str, basepath)
     dir_path = os.path.dirname(dest_path)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     with open(dest_path, "w") as f:
         f.write(content)
 
-def _md_to_html_path(src: str, src_root: str = "content", dst_root: str = "public") -> str:
+def _md_to_html_path(
+    src: str,
+    src_root: str = "content",
+    dst_root: str = "docs"
+) -> str:
     rel = os.path.relpath(src, src_root)
     fname, _ = os.path.splitext(rel)
     return os.path.join(dst_root, fname + ".html")
         
-def generate_blog(src: str = "content", dst: str = "public"):
+def generate_blog(src: str = "content", dst: str = "docs", basepath: str = "/"):
     for dir in os.listdir(src):
         dir_path = os.path.join(src, dir)
         if os.path.isfile(dir_path):
             dst_html = _md_to_html_path(dir_path)
-            generate_page(dir_path, "template.html", dst_html)
+            generate_page(dir_path, "template.html", dst_html, basepath)
         if os.path.isdir(dir_path):
             dst_dir_path = os.path.join(dst, dir_path)
             generate_blog(dir_path, dst_dir_path)
