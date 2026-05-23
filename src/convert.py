@@ -110,5 +110,22 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
         os.makedirs(dir_path)
     with open(dest_path, "w") as f:
         f.write(content)
+
+def _md_to_html_path(src: str, src_root: str = "content", dst_root: str = "public") -> str:
+    rel = os.path.relpath(src, src_root)
+    fname, _ = os.path.splitext(rel)
+    return os.path.join(dst_root, fname + ".html")
         
-        
+def generate_blog(src: str = "content", dst: str = "public"):
+    for dir in os.listdir(src):
+        dir_path = os.path.join(src, dir)
+        if os.path.isfile(dir_path):
+            dst_html = _md_to_html_path(dir_path)
+            generate_page(dir_path, "template.html", dst_html)
+        if os.path.isdir(dir_path):
+            dst_dir_path = os.path.join(dst, dir_path)
+            generate_blog(dir_path, dst_dir_path)
+            
+
+    
+

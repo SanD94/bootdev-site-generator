@@ -1,6 +1,6 @@
 import shutil, os
 
-from convert import generate_page
+from convert import generate_blog
 
 def copy_files(src: str = "static", dst: str = "public"):
     if os.path.exists(dst):
@@ -15,12 +15,11 @@ def copy_files(src: str = "static", dst: str = "public"):
             copy_files(src_dir_path, dst_dir_path)
 
 
-def generate_index():
-    generate_page("content/index.md", "template.html", "public/index.html")
+
 
 def main():
     copy_files()
-    generate_index()
+    generate_blog()
 
 if __name__ == "__main__":
     main()
