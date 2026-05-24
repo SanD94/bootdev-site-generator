@@ -131,7 +131,7 @@ def generate_blog(src: str = "content", dst: str = "docs", basepath: str = "/"):
             generate_page(dir_path, "template.html", dst_html, basepath)
         if os.path.isdir(dir_path):
             dst_dir_path = os.path.join(dst, dir_path)
-            generate_blog(dir_path, dst_dir_path)
+            generate_blog(dir_path, dst_dir_path, basepath)
             
 
     
